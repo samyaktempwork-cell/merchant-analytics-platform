@@ -18,7 +18,6 @@ public class TransactionService {
     public void loadTransactions() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-
             mapper.findAndRegisterModules();
 
             InputStream inputStream =
@@ -34,7 +33,24 @@ public class TransactionService {
         }
     }
 
-    public List<Transaction> getAllTransactions() {
-        return transactions;
+    public List<Transaction> getFilteredTransactions(
+            String cardBrand,
+            String status,
+            String declineReasonCode
+    ) {
+
+        return transactions.stream()
+
+                .filter(t -> cardBrand == null ||
+                        t.getCardBrand().name().equalsIgnoreCase(cardBrand))
+
+                .filter(t -> status == null ||
+                        t.getStatus().name().equalsIgnoreCase(status))
+
+                .filter(t -> declineReasonCode == null ||
+                        (t.getDeclineReasonCode() != null &&
+                                t.getDeclineReasonCode().equalsIgnoreCase(declineReasonCode)))
+
+                .toList();
     }
 }
