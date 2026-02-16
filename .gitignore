@@ -1,0 +1,25 @@
+# ========================
+# Java / Spring Boot
+# ========================
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.log
+
+# ========================
+# Node (future frontend)
+# ========================
+frontend/node_modules/
+frontend/dist/
+
+# ========================
+# IDE Files
+# ========================
+.idea/
+.vscode/
+*.iml
+
+# ========================
+# OS Files
+# ========================
+.DS_Store
+Thumbs.db
