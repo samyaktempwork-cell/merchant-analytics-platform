@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { fetchMTDSummary, fetchMonthlySummary } from "./api/analyticsApi";
-import type { SummaryResponse } from "./types/index";
+import type { SummaryResponse } from "./types";
+import FilterBar from "./components/FilterBar";
+import MTDSummary from "./components/MTDSummary";
+import MonthlySummary from "./components/MonthlySummary";
+import "./App.css";
 
 function App() {
   const [mtd, setMtd] = useState<SummaryResponse | null>(null);
@@ -8,19 +12,31 @@ function App() {
   const [filters, setFilters] = useState({
     cardBrand: "",
     status: "",
-    declineReasonCode: ""
+    declineReasonCode: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const loadData = async () => {
-    const params = Object.fromEntries(
-      Object.entries(filters).filter(([_, v]) => v !== "")
-    );
+    try {
+      setLoading(true);
+      setError("");
 
-    const mtdRes = await fetchMTDSummary(params);
-    const monthlyRes = await fetchMonthlySummary(params);
+      const params = Object.fromEntries(
+        Object.entries(filters).filter(([_, v]) => v !== "")
+      );
 
-    setMtd(mtdRes.data);
-    setMonthly(monthlyRes.data);
+      const mtdRes = await fetchMTDSummary(params);
+      const monthlyRes = await fetchMonthlySummary(params);
+
+      setMtd(mtdRes.data);
+      setMonthly(monthlyRes.data);
+    } catch (err) {
+      setError("Failed to load analytics data.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -28,53 +44,34 @@ function App() {
   }, []);
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+    <div className="container">
       <h1>Merchant Analytics Dashboard</h1>
 
-      <h2>Filters</h2>
-      <div style={{ marginBottom: "20px" }}>
-        <input
-          placeholder="Card Brand"
-          value={filters.cardBrand}
-          onChange={(e) =>
-            setFilters({ ...filters, cardBrand: e.target.value })
-          }
+      <div className="section">
+        <FilterBar
+          filters={filters}
+          setFilters={setFilters}
+          onApply={loadData}
         />
-        <input
-          placeholder="Status"
-          value={filters.status}
-          onChange={(e) =>
-            setFilters({ ...filters, status: e.target.value })
-          }
-        />
-        <input
-          placeholder="Decline Code"
-          value={filters.declineReasonCode}
-          onChange={(e) =>
-            setFilters({ ...filters, declineReasonCode: e.target.value })
-          }
-        />
-        <button onClick={loadData}>Apply Filters</button>
       </div>
 
-      <h2>Month-To-Date Summary</h2>
-      {mtd && (
-        <div>
-          <p>Total: {mtd.totalTransactions}</p>
-          <p>Approved: {mtd.totalApproved}</p>
-          <p>Declined: {mtd.totalDeclined}</p>
-        </div>
-      )}
+      {loading && <div className="card">Loading analytics...</div>}
 
-      <h2>Monthly Summary</h2>
-      {Object.entries(monthly).map(([month, data]) => (
-        <div key={month} style={{ marginBottom: "10px" }}>
-          <h3>{month}</h3>
-          <p>Total: {data.totalTransactions}</p>
-          <p>Approved: {data.totalApproved}</p>
-          <p>Declined: {data.totalDeclined}</p>
-        </div>
-      ))}
+      {error && <div className="error-card">{error}</div>}
+
+      {!loading && !error && (
+        <>
+          <div className="section">
+            <h2>Month-To-Date Summary</h2>
+            <MTDSummary data={mtd} />
+          </div>
+
+          <div className="section">
+            <h2>Monthly Summary</h2>
+            <MonthlySummary data={monthly} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

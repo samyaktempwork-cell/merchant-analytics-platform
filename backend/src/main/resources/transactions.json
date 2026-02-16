@@ -25,5 +25,50 @@
     "status": "APPROVED",
     "declineReasonCode": null,
     "transactionDate": "2026-01-15T09:00:00Z"
+  },
+  {
+    "transactionId": "TXN004",
+    "merchantId": "M003",
+    "amount": 320.00,
+    "cardBrand": "VISA",
+    "status": "DECLINED",
+    "declineReasonCode": "05",
+    "transactionDate": "2026-02-10T14:45:00Z"
+  },
+  {
+    "transactionId": "TXN005",
+    "merchantId": "M004",
+    "amount": 50.00,
+    "cardBrand": "AMEX",
+    "status": "DECLINED",
+    "declineReasonCode": "01",
+    "transactionDate": "2026-01-20T08:30:00Z"
+  },
+  {
+    "transactionId": "TXN006",
+    "merchantId": "M005",
+    "amount": 410.00,
+    "cardBrand": "MASTERCARD",
+    "status": "APPROVED",
+    "declineReasonCode": null,
+    "transactionDate": "2026-02-12T16:10:00Z"
+  },
+  {
+    "transactionId": "TXN007",
+    "merchantId": "M006",
+    "amount": 90.00,
+    "cardBrand": "VISA",
+    "status": "APPROVED",
+    "declineReasonCode": null,
+    "transactionDate": "2026-01-25T11:00:00Z"
+  },
+  {
+    "transactionId": "TXN008",
+    "merchantId": "M007",
+    "amount": 130.00,
+    "cardBrand": "MASTERCARD",
+    "status": "DECLINED",
+    "declineReasonCode": "12",
+    "transactionDate": "2026-02-18T19:30:00Z"
   }
 ]

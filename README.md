@@ -1,174 +1,103 @@
 # Merchant Analytics Platform
 
-## Overview
+A full-stack analytics dashboard built with:
 
-This application retrieves merchant transaction data, supports dynamic filtering, and provides aggregated summaries including Month-To-Date (MTD) and month-by-month metrics.
-
-The backend is built using Spring Boot and follows a clean layered architecture with reusable filtering and aggregation logic.
-
----
-
-## Tech Stack
-
-**Backend**
-- Java 21
-- Spring Boot 3
-- Maven
-- JUnit 5
-
-**Frontend**
-- Planned (Day 2)
+- Spring Boot (Java 21)
+- React + TypeScript (Vite)
+- In-memory transaction processing
+- REST-based filtering & aggregation
 
 ---
 
-## Features Implemented
+## Architecture Overview
 
-### 1. Transaction Retrieval
+### Backend
 
-Endpoint:
+- Layered architecture:
+  - Controller → Service → Model
+- Transactions loaded from JSON at startup
+- All filtering performed in service layer
+- Aggregations reuse filtered datasets
+- Supports dynamic query parameters:
+  - cardBrand
+  - status
+  - declineReasonCode
 
-```
-GET /api/transactions
-```
+Endpoints:
 
-Supports optional filtering by:
-
-- `cardBrand` (VISA, MASTERCARD, AMEX, DISCOVER)
-- `status` (APPROVED, DECLINED)
-- `declineReasonCode`
-
-Example:
-
-```
-GET /api/transactions?cardBrand=VISA
-GET /api/transactions?status=DECLINED
-GET /api/transactions?status=DECLINED&cardBrand=MASTERCARD
-```
+GET /api/summary/mtd  
+GET /api/summary/monthly  
 
 ---
 
-### 2. Month-To-Date (MTD) Summary
+### Frontend
 
-Endpoint:
+- Built with React + TypeScript
+- Component-based structure:
+  - FilterBar
+  - MTDSummary
+  - MonthlySummary
+- Axios-based API abstraction
+- Environment-based API configuration
+- Loading and error handling implemented
 
-```
-GET /api/summary/mtd
-```
+Environment variable:
 
-Supports same optional filters.
-
-Returns:
-
-- totalTransactions
-- totalApproved
-- totalDeclined
-- totals grouped by cardBrand
-- totals grouped by declineReasonCode
-
-Example:
-
-```
-GET /api/summary/mtd?status=DECLINED
-```
+VITE_API_BASE=http://localhost:8080/api
 
 ---
 
-### 3. Month-by-Month Summary
+## Design Decisions
 
-Endpoint:
-
-```
-GET /api/summary/monthly
-```
-
-Returns aggregated metrics grouped by Year-Month (e.g., 2026-01, 2026-02).
-
-Supports optional filters.
-
-Example:
-
-```
-GET /api/summary/monthly?cardBrand=VISA
-```
+- Filtering logic centralized in backend service to avoid duplication.
+- Aggregation functions operate on already-filtered datasets.
+- Frontend kept thin and declarative.
+- API base configured via environment variable for deploy flexibility.
+- UI structured as dashboard-style summary cards.
 
 ---
 
-## Running the Application
+## Assumptions
 
-Navigate to the backend directory:
-
-```
-cd backend
-```
-
-Run the application:
-
-```
-.\mvnw.cmd spring-boot:run
-```
-
-Application will start at:
-
-```
-http://localhost:8080
-```
+- Transactions are loaded in-memory (no database required).
+- Data volume assumed small-to-medium.
+- Focused on clarity, correctness, and separation of concerns.
 
 ---
 
-## Running Tests
+## How to Run
 
-Execute:
+### Backend
 
-```
-.\mvnw.cmd test
-```
+cd backend  
+mvn spring-boot:run  
 
-Includes:
+### Frontend
 
-- Unit tests for filtering logic
-- Integration test for summary API
-- Spring context load test
-
----
-
-## Architecture Notes
-
-### Backend Structure
-
-- Controller layer handles HTTP requests
-- Service layer contains business logic
-- DTO layer isolates response models
-- Filtering logic centralized in `TransactionService`
-- Aggregation logic dynamically built on filtered dataset
-
-### Design Decisions
-
-- Used `OffsetDateTime` for ISO timestamp support
-- Used enums for type safety (`CardBrand`, `TransactionStatus`)
-- JSON file used instead of database for simplicity
-- Reused filtering logic in summary endpoints to avoid duplication
-
-### Tradeoffs
-
-- In-memory data loading (no database)
-- No pagination implemented (not required)
-- No caching layer
-
-### Future Improvements
-
-- Add database persistence (PostgreSQL)
-- Add caching (Redis)
-- Add OpenAPI documentation
-- Add Docker support
-- Implement React frontend
+cd frontend  
+npm install  
+npm run dev  
 
 ---
 
-## Status
+## Future Improvements
 
-Backend implementation complete with:
+- Pagination for transaction listing
+- Database integration
+- Authentication
+- Chart visualizations
+- Dockerization
+- CI/CD pipeline
 
-- Dynamic filtering
-- Filter-aware aggregation
-- Unit and integration tests
-- Clean layered architecture
+---
+
+## Summary
+
+This implementation prioritizes:
+
+- Clean architecture
+- Reusable filtering logic
+- Proper separation of concerns
+- Environment-driven configuration
+- Production-aware frontend behavior
+
